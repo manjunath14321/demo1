@@ -1,30 +1,38 @@
 pipeline {
+    agent any
+    stages {
 
-	agent any
-}
-	
-	parameters {
-  string defaultValue: 'adi', name: 'name', trim: true
-}
-	stages {
-	  stage('build') {
-		steps {
-		  sh 'mvn install -DskipTests'
-		}
-	  }
+        stage('pull') {
+            steps {
+                git branch: 'master', url: 'https://github.com/manjunath14321/demo1.git'
+            }
+        }
+        stage('compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
 
-	  stage('test') {
-		  steps {
-				sh 'echo new'
-			}
-		 post {
-			 always{
-				archiveArtifacts artifacts: 'target/**.jar', followSymlinks: false
-			
-			 }
-			}
-	  }
-		
-}
+        stage('build') {
+            steps {
+                 sh 'mvn clean install'
+            }
+        }
+
+        
+    }
+
+  post{
+
+  success{
+     echo 'Build success'
+  }
+    
+  failure{
+       echo 'Failure in the build'
+   }
+
+  }
+
 
 }
